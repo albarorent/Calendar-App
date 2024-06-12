@@ -1,5 +1,12 @@
-import { useState } from "react";
+import { addHours, differenceInSeconds } from "date-fns";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import Modal from "react-modal";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { es } from "date-fns/locale/es";
+import { toast } from "sonner";
+
+registerLocale("es", es);
 
 const customStyles = {
   content: {
@@ -16,9 +23,56 @@ Modal.setAppElement("#root");
 
 export const CalendarModal = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [formSubmited, setFormSubmited] = useState(false);
 
   const onCloseModal = () => {
     setIsOpen(false);
+  };
+
+  const [formValues, setFormValues] = useState({
+    title: "",
+    notes: "",
+    start: new Date(),
+    end: addHours(new Date(), 2),
+  });
+
+  const titleClass = useMemo(() => {
+    if (!formSubmited) return "";
+    return formValues.title.length > 0 ? "is-valid" : "is-invalid";
+  }, [formValues.title, formSubmited]);
+
+  const onInputChange = ({
+    target,
+  }: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) => {
+    setFormValues({
+      ...formValues,
+      [target.name]: target.value,
+    });
+  };
+
+  const onDateChanged = (event: Date | null, changing: string) => {
+    setFormValues({
+      ...formValues,
+      [changing]: event,
+    });
+  };
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setFormSubmited(true);
+
+    const difference = differenceInSeconds(formValues.end, formValues.start);
+
+    if (isNaN(difference) || difference <= 0) {
+      return toast.error("Fechas incorrectas. Revisar las fechas ingresadas");
+    }
+
+    if (formValues.title.length <= 0) return;
+
+    console.log(formValues);
+    
   };
 
   return (
@@ -32,15 +86,32 @@ export const CalendarModal = () => {
     >
       <h1> Nuevo evento </h1>
       <hr />
-      <form className="container">
-        <div className="form-group mb-2">
+      <form onSubmit={onSubmit} className="container">
+        <div className="form-group mb-2 d-flex flex-column">
           <label>Fecha y hora inicio</label>
-          <input className="form-control" placeholder="Fecha inicio" />
+          <DatePicker
+            selected={formValues.start}
+            onChange={(event) => onDateChanged(event, "start")}
+            className="form-control"
+            dateFormat="Pp"
+            showTimeSelect
+            locale="es"
+            timeCaption="Hora"
+          />
         </div>
 
-        <div className="form-group mb-2">
+        <div className="form-group mb-2 d-flex flex-column">
           <label>Fecha y hora fin</label>
-          <input className="form-control" placeholder="Fecha inicio" />
+          <DatePicker
+            minDate={formValues.start}
+            selected={formValues.end}
+            onChange={(event) => onDateChanged(event, "end")}
+            className="form-control"
+            dateFormat="Pp"
+            showTimeSelect
+            locale="es"
+            timeCaption="Hora"
+          />
         </div>
 
         <hr />
@@ -48,10 +119,12 @@ export const CalendarModal = () => {
           <label>Titulo y notas</label>
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${titleClass} `}
             placeholder="Título del evento"
             name="title"
             autoComplete="off"
+            onChange={onInputChange}
+            value={formValues.title}
           />
           <small id="emailHelp" className="form-text text-muted">
             Una descripción corta
@@ -64,6 +137,8 @@ export const CalendarModal = () => {
             placeholder="Notas"
             rows={5}
             name="notes"
+            onChange={onInputChange}
+            value={formValues.notes}
           ></textarea>
           <small id="emailHelp" className="form-text text-muted">
             Información adicional
