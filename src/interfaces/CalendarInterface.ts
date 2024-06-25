@@ -1,11 +1,15 @@
-export interface eventCalendar {
-    title:string;
-    notes:string;
-    start:Date;
-    end:Date;
-    bgColor:string;
-    user:{
-        _id:number;
-        name:string
-    }
-}
+interface User {
+    _id: number;
+    name: string;
+  }
+  
+  export interface EventCalendar {
+    _id?: number;
+    title: string;
+    notes: string;
+    start: Date;
+    end: Date;
+    bgColor?: string;
+    user?: User;
+  }
+  

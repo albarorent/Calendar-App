@@ -2,9 +2,15 @@ import { CSSProperties, useState } from "react";
 import { Calendar, EventPropGetter, View } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
-import { CalendarEvent, CalendarModal, FabAddNew, Navbar } from "../";
+import {
+  CalendarEvent,
+  CalendarModal,
+  FabAddNew,
+  FabDelete,
+  Navbar,
+} from "../";
 import { getMessageES, localizer } from "../../helpers";
-import { eventCalendar } from "../../interfaces/CalendarInterface";
+import { EventCalendar } from "../../interfaces/CalendarInterface";
 import { useCalendarStore, useUiStore } from "../../hooks";
 
 export const CalendarPage = () => {
@@ -12,9 +18,9 @@ export const CalendarPage = () => {
     (localStorage.getItem("lastView") as View) || undefined
   );
   const { openDateModal } = useUiStore();
-  const { events } = useCalendarStore();
+  const { events, setActiveEvent, hasEventSelected } = useCalendarStore();
 
-  const eventStyleGetter: EventPropGetter<eventCalendar> = (
+  const eventStyleGetter: EventPropGetter<EventCalendar> = (
     event
     // start,
     // end,
@@ -34,8 +40,8 @@ export const CalendarPage = () => {
     openDateModal();
   };
 
-  const onSelect = (event: eventCalendar) => {
-    console.log({ doubleClick: event });
+  const onSelect = (event: EventCalendar) => {
+    setActiveEvent(event);
   };
 
   const onViewChanged = (view: View) => {
@@ -63,6 +69,7 @@ export const CalendarPage = () => {
 
       <CalendarModal />
       <FabAddNew />
+      {hasEventSelected && <FabDelete />}
     </>
   );
 };
