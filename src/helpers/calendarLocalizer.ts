@@ -1,10 +1,10 @@
 import { dateFnsLocalizer } from "react-big-calendar";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 // import { enUS } from "date-fns/locale/en-US";
-import esES from "date-fns/locale/es";
+import { es } from "date-fns/locale";
 
 const locales = {
-  es: esES,
+  es: es,
 };
 
 export const localizer = dateFnsLocalizer({

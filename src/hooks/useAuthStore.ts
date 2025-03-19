@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../store/hooks";
 import { calendarApi } from "../api";
-import { clearErrorMessage, onChecking, onLogin, onLogout } from "../store";
+import { clearErrorMessage, onChecking, onLogin, onLogout, onLogoutCalendar } from "../store";
 import { GetResponseLogin } from "../interfaces/AuthInterface";
 import { isAxiosError } from "axios";
 
@@ -88,6 +88,7 @@ export const useAuthStore = () => {
   const startLogout = () => {
     localStorage.clear();
     dispatch(onLogout("Se ha cerrado la sesión"));
+    dispatch(onLogoutCalendar())
   };
 
   return {
