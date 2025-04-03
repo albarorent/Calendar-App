@@ -14,6 +14,7 @@ export const FabAddNew = () => {
       bgColor: "#000",
       user: {
         _id: 123,
+        uid: "abc123",
         name: "Alvaro",
       },
     })
